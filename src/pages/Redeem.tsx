@@ -265,7 +265,8 @@ const RedeemPage = () => {
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 200 }}
+                        transition={{ type: "spring", stiffness: 10 }}
+                        className="flex justify-center"
                       >
                         {getStatusIcon()}
                       </motion.div>
