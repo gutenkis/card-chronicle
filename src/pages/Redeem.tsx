@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Gift, Loader2, CheckCircle, XCircle, Clock, Sparkles } from "lucide-react";
+import { Gift, Loader2, CheckCircle, XCircle, Clock, Sparkles, QrCode, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/layout/Header";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
+import QRScanner from "@/components/scanner/QRScanner";
 
 type RedeemStatus = "idle" | "loading" | "success" | "error" | "expired" | "already_redeemed";
 
@@ -21,9 +22,12 @@ interface RedeemResult {
   rarity?: string;
 }
 
+type InputMode = "choose" | "manual" | "scanner";
+
 const RedeemPage = () => {
   const [code, setCode] = useState("");
   const [result, setResult] = useState<RedeemResult>({ status: "idle", message: "" });
+  const [inputMode, setInputMode] = useState<InputMode>("choose");
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -43,8 +47,10 @@ const RedeemPage = () => {
     setCode(value);
   };
 
-  const handleRedeem = async () => {
-    if (code.length !== 7) {
+  const handleRedeem = async (redeemCode?: string) => {
+    const codeToUse = redeemCode || code;
+    
+    if (codeToUse.length !== 7) {
       toast({
         title: "Código inválido",
         description: "O código deve estar no formato YYY-ZZZ",
@@ -69,7 +75,7 @@ const RedeemPage = () => {
       const { data: event, error: eventError } = await supabase
         .from("events")
         .select("*")
-        .eq("redemption_code", code)
+        .eq("redemption_code", codeToUse)
         .maybeSingle();
 
       if (eventError) throw eventError;
@@ -147,9 +153,19 @@ const RedeemPage = () => {
     }
   };
 
+  const handleQRScan = (scannedCode: string) => {
+    setCode(scannedCode);
+    setInputMode("manual");
+    // Auto-submit if code is valid
+    if (scannedCode.length === 7) {
+      handleRedeem(scannedCode);
+    }
+  };
+
   const resetForm = () => {
     setCode("");
     setResult({ status: "idle", message: "" });
+    setInputMode("choose");
   };
 
   const getStatusIcon = () => {
@@ -187,6 +203,16 @@ const RedeemPage = () => {
       <div className="min-h-screen bg-background">
         <Header />
         
+        {/* QR Scanner Overlay */}
+        <AnimatePresence>
+          {inputMode === "scanner" && (
+            <QRScanner
+              onScan={handleQRScan}
+              onClose={() => setInputMode("choose")}
+            />
+          )}
+        </AnimatePresence>
+        
         <main className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -205,13 +231,38 @@ const RedeemPage = () => {
                 </motion.div>
                 <CardTitle className="text-2xl">Resgatar Card</CardTitle>
                 <CardDescription>
-                  Digite o código do evento para adicionar o card à sua coleção
+                  Escaneie o QRCode ou digite o código para adicionar o card à sua coleção
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-6">
                 <AnimatePresence mode="wait">
-                  {result.status === "idle" || result.status === "loading" ? (
+                  {result.status === "idle" && inputMode === "choose" ? (
+                    <motion.div
+                      key="choose"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="grid grid-cols-2 gap-4"
+                    >
+                      <Button
+                        variant="outline"
+                        onClick={() => setInputMode("scanner")}
+                        className="h-32 flex flex-col gap-3 hover:border-primary hover:bg-primary/5"
+                      >
+                        <QrCode className="h-10 w-10 text-primary" />
+                        <span className="text-sm">Escanear QRCode</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setInputMode("manual")}
+                        className="h-32 flex flex-col gap-3 hover:border-primary hover:bg-primary/5"
+                      >
+                        <Keyboard className="h-10 w-10 text-primary" />
+                        <span className="text-sm">Digitar Código</span>
+                      </Button>
+                    </motion.div>
+                  ) : result.status === "idle" || result.status === "loading" ? (
                     <motion.div
                       key="form"
                       initial={{ opacity: 0 }}
@@ -230,29 +281,41 @@ const RedeemPage = () => {
                           className="text-center text-2xl font-mono tracking-widest h-14 bg-background/50"
                           maxLength={7}
                           disabled={result.status === "loading"}
+                          autoFocus
                         />
                         <p className="text-xs text-muted-foreground text-center">
                           Formato: YYY-ZZZ (3 letras/números - 3 letras/números)
                         </p>
                       </div>
 
-                      <Button
-                        onClick={handleRedeem}
-                        disabled={code.length !== 7 || result.status === "loading"}
-                        className="w-full h-12 text-lg"
-                      >
-                        {result.status === "loading" ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Verificando...
-                          </>
-                        ) : (
-                          <>
-                            <Gift className="mr-2 h-5 w-5" />
-                            Resgatar Card
-                          </>
-                        )}
-                      </Button>
+                      <div className="flex gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => setInputMode("scanner")}
+                          className="flex-1"
+                          disabled={result.status === "loading"}
+                        >
+                          <QrCode className="mr-2 h-4 w-4" />
+                          Escanear
+                        </Button>
+                        <Button
+                          onClick={() => handleRedeem()}
+                          disabled={code.length !== 7 || result.status === "loading"}
+                          className="flex-1"
+                        >
+                          {result.status === "loading" ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Verificando...
+                            </>
+                          ) : (
+                            <>
+                              <Gift className="mr-2 h-4 w-4" />
+                              Resgatar
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </motion.div>
                   ) : (
                     <motion.div
@@ -265,7 +328,7 @@ const RedeemPage = () => {
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 10 }}
+                        transition={{ type: "spring", stiffness: 200 }}
                         className="flex justify-center"
                       >
                         {getStatusIcon()}
@@ -320,8 +383,8 @@ const RedeemPage = () => {
             >
               <h4 className="font-semibold text-foreground mb-2">Como resgatar:</h4>
               <ol className="list-decimal list-inside space-y-1">
-                <li>Obtenha o código no evento ou escaneie o QRCode</li>
-                <li>Digite o código no formato YYY-ZZZ</li>
+                <li>Escaneie o QRCode ou digite o código do evento</li>
+                <li>O código está no formato YYY-ZZZ</li>
                 <li>Clique em "Resgatar Card"</li>
                 <li>O card será adicionado à sua coleção!</li>
               </ol>
