@@ -138,8 +138,8 @@ const CollectibleCard = ({
       <Tilt
         tiltMaxAngleX={15}
         tiltMaxAngleY={15}
-        perspective={1000}
-        scale={1.02}
+        perspective={900}
+        scale={1.08}
         transitionSpeed={400}
         gyroscope={true}
         className="cursor-pointer"
@@ -183,16 +183,19 @@ const CollectibleCard = ({
 
             {/* Card info */}
             <div className="absolute bottom-0 left-0 right-0 p-4">
-              <h3 className="font-display text-sm font-bold text-foreground mb-1 line-clamp-2">
-                {title}
+              <h3 className="font-display text-sm text-foreground mb-1 line-clamp-2">
+                <span>{title}</span><br/>
+              </h3>
+              <h3 className="font-display text-sm text-foreground mb-1 line-clamp-2">
+                <span className='font-bold'>Tema: {theme}</span>
               </h3>
               {preacher && (
                 <p className="text-xs text-muted-foreground line-clamp-1">
-                  {preacher}
+                  Pregador: {preacher}
                 </p>
               )}
               <p className="text-xs text-muted-foreground mt-1">
-                {new Date(eventDate).toLocaleDateString('pt-BR')}
+                {eventDate.split('-').reverse().join('/')}
               </p>
             </div>
           </div>

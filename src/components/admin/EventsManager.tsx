@@ -424,17 +424,17 @@ const EventsManager = () => {
 
       {/* Event Details Dialog */}
       <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-        <DialogContent className="glass max-w-md">
+        <DialogContent className="glass max-w-md max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Detalhes do Evento</DialogTitle>
           </DialogHeader>
           {selectedEvent && (
-            <div className="space-y-4">
-              <div className="aspect-[3/4] rounded-lg overflow-hidden">
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+              <div className="aspect-[4/4] rounded-lg overflow-hidden">
                 <img
                   src={selectedEvent.card_image_url}
                   alt={selectedEvent.title}
-                  className="w-full h-full object-cover"
+                  className="w-full object-cover"
                 />
               </div>
               <div className="space-y-2">
@@ -442,6 +442,22 @@ const EventsManager = () => {
                 <Badge className={rarityColors[selectedEvent.rarity]}>
                   {rarityLabels[selectedEvent.rarity]}
                 </Badge>
+                {selectedEvent.theme && (
+                  <p>
+                    <span className="font-semibold">Tema:</span> {selectedEvent.theme}
+                  </p>
+                )}
+                {selectedEvent.preacher && (
+                  <p>
+                    <span className="font-semibold">Pregador:</span> {selectedEvent.preacher}
+                  </p>
+                )}
+                <p>
+                  <span className="font-semibold">Data do Evento:</span>{' '}
+                  {format(new Date(selectedEvent.event_date), 'dd MMM yyyy', {
+                    locale: ptBR,
+                  })}
+                </p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50 space-y-3">
                 <div className="flex items-center justify-between">
