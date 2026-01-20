@@ -42,11 +42,11 @@ const Header = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+          <div className="w-10 h-10 rounded-lg bg-primary/20 border border-foreground/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
             <Sparkles className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            CardVault
+          <span className="font-display text-xl font-bold text-foreground">
+            Cards RC
           </span>
         </Link>
 

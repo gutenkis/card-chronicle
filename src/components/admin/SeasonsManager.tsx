@@ -14,6 +14,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Form,
   FormControl,
   FormField,
@@ -25,7 +35,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Plus, Edit, Calendar, Loader2 } from 'lucide-react';
+import { Plus, Edit, Calendar, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -50,6 +60,7 @@ interface Season {
 const SeasonsManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSeason, setEditingSeason] = useState<Season | null>(null);
+  const [seasonToDelete, setSeasonToDelete] = useState<Season | null>(null);
   const queryClient = useQueryClient();
 
   const form = useForm<SeasonFormData>({
@@ -119,6 +130,42 @@ const SeasonsManager = () => {
     },
     onError: (error) => {
       toast.error('Erro ao atualizar temporada: ' + error.message);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (seasonId: string) => {
+      // First get all events in this season
+      const { data: events } = await supabase
+        .from('events')
+        .select('id')
+        .eq('season_id', seasonId);
+
+      // Delete user_cards for each event
+      if (events && events.length > 0) {
+        for (const event of events) {
+          await supabase.from('user_cards').delete().eq('event_id', event.id);
+        }
+        // Delete all events in this season
+        await supabase.from('events').delete().eq('season_id', seasonId);
+      }
+
+      // Delete badges linked to this season
+      await supabase.from('badges').delete().eq('season_id', seasonId);
+
+      // Finally delete the season
+      const { error } = await supabase.from('seasons').delete().eq('id', seasonId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['seasons'] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+      toast.success('Temporada excluída com sucesso!');
+      setSeasonToDelete(null);
+    },
+    onError: (error) => {
+      toast.error('Erro ao excluir temporada: ' + error.message);
     },
   });
 
@@ -243,6 +290,32 @@ const SeasonsManager = () => {
         </Dialog>
       </div>
 
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!seasonToDelete} onOpenChange={() => setSeasonToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Temporada</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir a temporada "{seasonToDelete?.name}"? 
+              Esta ação também excluirá todos os eventos, cards e badges vinculados a esta temporada.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => seasonToDelete && deleteMutation.mutate(seasonToDelete.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                'Excluir'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
@@ -287,14 +360,23 @@ const SeasonsManager = () => {
                         {season.description || 'Sem descrição'}
                       </p>
                     </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleEdit(season)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleEdit(season)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => setSeasonToDelete(season)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

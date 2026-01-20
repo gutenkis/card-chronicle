@@ -13,6 +13,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Form,
   FormControl,
   FormField,
@@ -31,7 +41,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Plus, Layers, Loader2, QrCode, Copy, Check, Upload, Image } from 'lucide-react';
+import { Plus, Layers, Loader2, QrCode, Copy, Check, Upload, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { QRCodeSVG } from 'qrcode.react';
@@ -89,14 +99,15 @@ const rarityLabels: Record<CardRarity, string> = {
 
 const rarityColors: Record<CardRarity, string> = {
   comum: 'bg-muted text-muted-foreground',
-  raro: 'bg-rarity-rare/20 text-rarity-rare border-rarity-rare',
-  epico: 'bg-rarity-epic/20 text-rarity-epic border-rarity-epic',
-  lendario: 'bg-rarity-legendary/20 text-rarity-legendary border-rarity-legendary',
+  raro: 'bg-rarity-raro/20 text-rarity-raro border-rarity-raro',
+  epico: 'bg-rarity-epico/20 text-rarity-epico border-rarity-epico',
+  lendario: 'bg-rarity-lendario/20 text-rarity-lendario border-rarity-lendario',
 };
 
 const EventsManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -145,7 +156,6 @@ const EventsManager = () => {
         throw new Error('Imagem do card é obrigatória');
       }
 
-      // Upload image to storage
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
       
@@ -155,7 +165,6 @@ const EventsManager = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from('cards')
         .getPublicUrl(fileName);
@@ -189,6 +198,26 @@ const EventsManager = () => {
     },
     onError: (error) => {
       toast.error('Erro ao criar evento: ' + error.message);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (eventId: string) => {
+      // First delete related user_cards
+      await supabase.from('user_cards').delete().eq('event_id', eventId);
+      
+      const { error } = await supabase.from('events').delete().eq('id', eventId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+      toast.success('Evento excluído com sucesso!');
+      setEventToDelete(null);
+      setSelectedEvent(null);
+    },
+    onError: (error) => {
+      toast.error('Erro ao excluir evento: ' + error.message);
     },
   });
 
@@ -380,17 +409,17 @@ const EventsManager = () => {
                   <FormLabel>Imagem do Card (PNG/JPG)</FormLabel>
                   <div className="flex gap-4">
                     <label className="flex-1 cursor-pointer">
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2">
                         {imagePreview ? (
                           <img
                             src={imagePreview}
                             alt="Preview"
-                            className="max-h-32 object-contain rounded"
+                            className="max-h-24 object-contain rounded"
                           />
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">
+                            <Upload className="w-6 h-6 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
                               Clique para selecionar
                             </span>
                           </>
@@ -424,83 +453,109 @@ const EventsManager = () => {
 
       {/* Event Details Dialog */}
       <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-        <DialogContent className="glass max-w-md max-h-[90vh] flex flex-col">
+        <DialogContent className="glass max-w-sm max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Detalhes do Evento</DialogTitle>
           </DialogHeader>
           {selectedEvent && (
             <div className="flex-1 overflow-y-auto pr-2 space-y-2">
-              <div className="aspect-[4/4] rounded-lg overflow-hidden">
+              <div className="aspect-square rounded-lg overflow-hidden max-w-[200px] mx-auto">
                 <img
                   src={selectedEvent.card_image_url}
                   alt={selectedEvent.title}
-                  className="w-full object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1 text-sm">
                 <h3 className="font-semibold">{selectedEvent.title}</h3>
                 <Badge className={rarityColors[selectedEvent.rarity]}>
                   {rarityLabels[selectedEvent.rarity]}
                 </Badge>
                 {selectedEvent.theme && (
-                  <p>
-                    <span className="font-semibold">Tema:</span> {selectedEvent.theme}
-                  </p>
+                  <p><span className="font-semibold">Tema:</span> {selectedEvent.theme}</p>
                 )}
                 {selectedEvent.preacher && (
-                  <p>
-                    <span className="font-semibold">Pregador:</span> {selectedEvent.preacher}
-                  </p>
+                  <p><span className="font-semibold">Pregador:</span> {selectedEvent.preacher}</p>
                 )}
                 <p>
-                  <span className="font-semibold">Data do Evento:</span>{' '}
-                  {format(new Date(selectedEvent.event_date), 'dd MMM yyyy', {
-                    locale: ptBR,
-                  })}
+                  <span className="font-semibold">Data:</span>{' '}
+                  {format(new Date(selectedEvent.event_date), 'dd MMM yyyy', { locale: ptBR })}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-muted/50 space-y-3">
+              <div className="p-3 rounded-lg bg-muted/50 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Código de Resgate:</span>
-                  <div className="flex items-center gap-2">
-                    <code className="font-mono font-bold text-primary">
+                  <span className="text-xs text-muted-foreground">Código:</span>
+                  <div className="flex items-center gap-1">
+                    <code className="font-mono font-bold text-primary text-sm">
                       {selectedEvent.redemption_code}
                     </code>
                     <Button
                       size="icon"
                       variant="ghost"
+                      className="h-6 w-6"
                       onClick={() => handleCopyCode(selectedEvent.redemption_code)}
                     >
                       {copiedCode === selectedEvent.redemption_code ? (
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-3 h-3 text-green-500" />
                       ) : (
-                        <Copy className="w-4 h-4" />
+                        <Copy className="w-3 h-3" />
                       )}
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-center p-4 bg-white rounded-lg">
+                <div className="flex justify-center p-2 bg-white rounded-lg">
                   <QRCodeSVG
                     value={selectedEvent.qr_code_data || selectedEvent.redemption_code}
-                    size={150}
+                    size={100}
                     level="H"
                   />
                 </div>
               </div>
+              <Button
+                variant="destructive"
+                className="w-full mt-2"
+                onClick={() => setEventToDelete(selectedEvent)}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Excluir Evento
+              </Button>
             </div>
           )}
         </DialogContent>
       </Dialog>
 
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!eventToDelete} onOpenChange={() => setEventToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Evento</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o evento "{eventToDelete?.title}"? 
+              Esta ação também removerá todos os cards resgatados pelos usuários para este evento.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => eventToDelete && deleteMutation.mutate(eventToDelete.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                'Excluir'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          {[1, 2, 3, 4, 5].map((i) => (
             <Card key={i} className="glass animate-pulse">
-              <CardHeader>
-                <div className="h-6 bg-muted rounded w-32" />
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-[3/4] bg-muted rounded mb-4" />
+              <CardContent className="p-3">
+                <div className="aspect-[3/4] bg-muted rounded mb-2" />
                 <div className="h-4 bg-muted rounded w-24" />
               </CardContent>
             </Card>
@@ -518,7 +573,7 @@ const EventsManager = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           <AnimatePresence>
             {events.map((event, index) => (
               <motion.div
@@ -526,41 +581,36 @@ const EventsManager = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.03 }}
               >
                 <Card
                   className="glass border-border/50 hover:border-primary/50 transition-all cursor-pointer group"
                   onClick={() => setSelectedEvent(event)}
                 >
-                  <CardContent className="p-4">
-                    <div className="aspect-[3/4] rounded-lg overflow-hidden mb-4 relative">
+                  <CardContent className="p-2">
+                    <div className="aspect-[3/4] rounded-lg overflow-hidden mb-2 relative">
                       <img
                         src={event.card_image_url}
                         alt={event.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-2 right-2">
-                        <Badge className={rarityColors[event.rarity]}>
+                      <div className="absolute top-1 right-1">
+                        <Badge className={`${rarityColors[event.rarity]} text-[10px] px-1.5 py-0.5`}>
                           {rarityLabels[event.rarity]}
                         </Badge>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="font-semibold truncate">{event.title}</h3>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
+                    <div className="space-y-0.5">
+                      <h3 className="font-semibold text-xs truncate">{event.title}</h3>
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="text-muted-foreground truncate">
                           {event.seasons?.name}
                         </span>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <QrCode className="w-3 h-3" />
-                          <code className="text-xs font-mono">
-                            {event.redemption_code}
-                          </code>
+                        <div className="flex items-center gap-0.5 text-muted-foreground">
+                          <QrCode className="w-2.5 h-2.5" />
+                          <code className="font-mono">{event.redemption_code}</code>
                         </div>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(event.event_date), 'dd MMM yyyy', { locale: ptBR })}
-                      </p>
                     </div>
                   </CardContent>
                 </Card>
