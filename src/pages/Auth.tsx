@@ -98,7 +98,7 @@ const Auth = () => {
     } else {
       toast({
         title: 'Conta criada!',
-        description: 'Bem-vindo ao CardVault!',
+        description: 'Bem-vindo ao Cards RC!',
       });
       navigate('/');
     }
@@ -129,7 +129,7 @@ const Auth = () => {
               <Sparkles className="w-8 h-8 text-primary" />
             </motion.div>
             <h1 className="font-display text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              CardVault
+              Cards RC
             </h1>
             <p className="text-muted-foreground mt-2">
               Colecione momentos, guarde memórias
