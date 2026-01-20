@@ -300,8 +300,8 @@ const SeasonsManager = () => {
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {format(new Date(season.start_date), 'dd MMM yyyy', { locale: ptBR })} -{' '}
-                        {format(new Date(season.end_date), 'dd MMM yyyy', { locale: ptBR })}
+                        {format(new Date(season.start_date + 'T00:00:00'), 'dd MMM yyyy', { locale: ptBR })} -{' '}
+                        {format(new Date(season.end_date + 'T00:00:00'), 'dd MMM yyyy', { locale: ptBR })}
                       </span>
                     </div>
                   </CardContent>

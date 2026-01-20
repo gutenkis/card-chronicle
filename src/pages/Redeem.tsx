@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/layout/Header";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import QRScanner from "@/components/scanner/QRScanner";
+import CardRevealAnimation from "@/components/redeem/CardRevealAnimation";
 
 type RedeemStatus = "idle" | "loading" | "success" | "error" | "expired" | "already_redeemed";
 
@@ -28,6 +29,7 @@ const RedeemPage = () => {
   const [code, setCode] = useState("");
   const [result, setResult] = useState<RedeemResult>({ status: "idle", message: "" });
   const [inputMode, setInputMode] = useState<InputMode>("choose");
+  const [showRevealAnimation, setShowRevealAnimation] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -139,10 +141,8 @@ const RedeemPage = () => {
         rarity: event.rarity,
       });
 
-      toast({
-        title: "🎉 Card Resgatado!",
-        description: `Você adicionou "${event.title}" à sua coleção!`,
-      });
+      // Show reveal animation
+      setShowRevealAnimation(true);
 
     } catch (error) {
       console.error("Redeem error:", error);
@@ -166,6 +166,15 @@ const RedeemPage = () => {
     setCode("");
     setResult({ status: "idle", message: "" });
     setInputMode("choose");
+    setShowRevealAnimation(false);
+  };
+
+  const handleRevealComplete = () => {
+    setShowRevealAnimation(false);
+    toast({
+      title: "🎉 Card Resgatado!",
+      description: `Você adicionou "${result.cardTitle}" à sua coleção!`,
+    });
   };
 
   const getStatusIcon = () => {
@@ -202,6 +211,15 @@ const RedeemPage = () => {
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
         <Header />
+        
+        {/* Card Reveal Animation */}
+        <CardRevealAnimation
+          isOpen={showRevealAnimation}
+          onComplete={handleRevealComplete}
+          cardImage={result.cardImage || ""}
+          cardTitle={result.cardTitle || ""}
+          rarity={result.rarity || "comum"}
+        />
         
         {/* QR Scanner Overlay */}
         <AnimatePresence>
