@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CardVault Premium Design System
-   Theme: Dark premium with holographic card effects
+/* Cards RC Premium Design System
+   Theme: Light, clean with teal/aqua accents and black outlines
    All colors in HSL
 */
 
@@ -11,72 +11,72 @@
 
 @layer base {
   :root {
-    /* Dark premium background */
-    --background: 230 25% 7%;
-    --foreground: 210 40% 98%;
+    /* Light premium background */
+    --background: 180 20% 97%;
+    --foreground: 180 10% 10%;
 
     /* Card surface */
-    --card: 230 20% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 180 15% 98%;
+    --card-foreground: 180 10% 10%;
 
     /* Popover */
-    --popover: 230 20% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 180 15% 99%;
+    --popover-foreground: 180 10% 10%;
 
-    /* Primary - Golden accent */
-    --primary: 45 100% 55%;
-    --primary-foreground: 230 25% 7%;
+    /* Primary - Teal/Aqua accent */
+    --primary: 174 72% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Deep purple */
-    --secondary: 270 60% 50%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary - Dark gray */
+    --secondary: 180 5% 25%;
+    --secondary-foreground: 0 0% 100%;
 
     /* Muted */
-    --muted: 230 15% 18%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 180 10% 92%;
+    --muted-foreground: 180 5% 45%;
 
-    /* Accent - Cyan glow */
-    --accent: 185 100% 50%;
-    --accent-foreground: 230 25% 7%;
+    /* Accent - Soft teal */
+    --accent: 174 50% 85%;
+    --accent-foreground: 180 10% 10%;
 
     /* Destructive */
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Border and input */
-    --border: 230 15% 20%;
-    --input: 230 15% 15%;
-    --ring: 45 100% 55%;
+    --border: 180 10% 80%;
+    --input: 180 10% 95%;
+    --ring: 174 72% 40%;
 
     --radius: 0.75rem;
 
     /* Rarity colors */
-    --rarity-comum: 220 15% 50%;
-    --rarity-raro: 210 100% 55%;
-    --rarity-epico: 280 100% 60%;
-    --rarity-lendario: 45 100% 55%;
+    --rarity-comum: 180 10% 50%;
+    --rarity-raro: 210 100% 50%;
+    --rarity-epico: 280 100% 55%;
+    --rarity-lendario: 45 100% 50%;
 
     /* Gradients for rarities */
-    --gradient-comum: linear-gradient(135deg, hsl(220 15% 40%), hsl(220 15% 60%));
-    --gradient-raro: linear-gradient(135deg, hsl(200 100% 45%), hsl(220 100% 65%));
-    --gradient-epico: linear-gradient(135deg, hsl(260 100% 50%), hsl(300 100% 60%));
-    --gradient-lendario: linear-gradient(135deg, hsl(35 100% 50%), hsl(55 100% 60%), hsl(35 100% 50%));
+    --gradient-comum: linear-gradient(135deg, hsl(180 10% 45%), hsl(180 10% 60%));
+    --gradient-raro: linear-gradient(135deg, hsl(200 100% 45%), hsl(220 100% 55%));
+    --gradient-epico: linear-gradient(135deg, hsl(260 100% 50%), hsl(300 100% 55%));
+    --gradient-lendario: linear-gradient(135deg, hsl(35 100% 50%), hsl(55 100% 55%), hsl(35 100% 50%));
 
     /* Glow effects */
-    --glow-comum: 0 0 10px hsl(220 15% 50% / 0.3);
-    --glow-raro: 0 0 20px hsl(210 100% 55% / 0.5), 0 0 40px hsl(210 100% 55% / 0.3);
-    --glow-epico: 0 0 25px hsl(280 100% 60% / 0.6), 0 0 50px hsl(280 100% 60% / 0.4);
-    --glow-lendario: 0 0 30px hsl(45 100% 55% / 0.7), 0 0 60px hsl(45 100% 55% / 0.5), 0 0 100px hsl(45 100% 55% / 0.3);
+    --glow-comum: 0 0 10px hsl(180 10% 50% / 0.2);
+    --glow-raro: 0 0 20px hsl(210 100% 50% / 0.3), 0 0 40px hsl(210 100% 50% / 0.2);
+    --glow-epico: 0 0 25px hsl(280 100% 55% / 0.4), 0 0 50px hsl(280 100% 55% / 0.3);
+    --glow-lendario: 0 0 30px hsl(45 100% 50% / 0.5), 0 0 60px hsl(45 100% 50% / 0.4), 0 0 100px hsl(45 100% 50% / 0.2);
 
     /* Sidebar */
-    --sidebar-background: 230 20% 10%;
-    --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 45 100% 55%;
-    --sidebar-primary-foreground: 230 25% 7%;
-    --sidebar-accent: 230 15% 18%;
-    --sidebar-accent-foreground: 210 40% 90%;
-    --sidebar-border: 230 15% 20%;
-    --sidebar-ring: 45 100% 55%;
+    --sidebar-background: 180 15% 98%;
+    --sidebar-foreground: 180 10% 20%;
+    --sidebar-primary: 174 72% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 180 10% 92%;
+    --sidebar-accent-foreground: 180 10% 20%;
+    --sidebar-border: 180 10% 85%;
+    --sidebar-ring: 174 72% 40%;
   }
 }
 
@@ -98,25 +98,25 @@
 @layer components {
   /* Card rarity borders */
   .card-comum {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden border-2 border-foreground/20;
     background: var(--gradient-comum);
     box-shadow: var(--glow-comum);
   }
 
   .card-raro {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden border-2 border-foreground/30;
     background: var(--gradient-raro);
     box-shadow: var(--glow-raro);
   }
 
   .card-epico {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden border-2 border-foreground/40;
     background: var(--gradient-epico);
     box-shadow: var(--glow-epico);
   }
 
   .card-lendario {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden border-2 border-foreground/50;
     background: var(--gradient-lendario);
     box-shadow: var(--glow-lendario);
     animation: legendary-pulse 2s ease-in-out infinite;
@@ -124,8 +124,8 @@
 
   /* Mystery card */
   .card-mystery {
-    @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(230 20% 15%), hsl(230 20% 20%));
+    @apply relative overflow-hidden border-2 border-dashed border-muted-foreground/50;
+    background: linear-gradient(135deg, hsl(180 10% 90%), hsl(180 10% 95%));
     filter: grayscale(0.8);
   }
 
@@ -146,19 +146,19 @@
   /* Glass effect */
   .glass {
     @apply backdrop-blur-xl;
-    background: hsl(230 20% 12% / 0.8);
-    border: 1px solid hsl(230 15% 25% / 0.5);
+    background: hsl(180 15% 98% / 0.9);
+    border: 1px solid hsl(180 10% 80%);
   }
 
   /* Premium button variants */
   .btn-primary-glow {
-    @apply relative overflow-hidden bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-lg;
-    box-shadow: 0 0 20px hsl(45 100% 55% / 0.4), 0 0 40px hsl(45 100% 55% / 0.2);
+    @apply relative overflow-hidden bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-lg border-2 border-foreground/20;
+    box-shadow: 0 0 15px hsl(174 72% 40% / 0.3), 0 0 30px hsl(174 72% 40% / 0.15);
     transition: all 0.3s ease;
   }
 
   .btn-primary-glow:hover {
-    box-shadow: 0 0 30px hsl(45 100% 55% / 0.6), 0 0 60px hsl(45 100% 55% / 0.3);
+    box-shadow: 0 0 25px hsl(174 72% 40% / 0.5), 0 0 50px hsl(174 72% 40% / 0.25);
     transform: translateY(-2px);
   }
 
@@ -191,7 +191,7 @@
   .border-animated {
     position: relative;
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(135deg, hsl(45 100% 55%), hsl(280 100% 60%), hsl(210 100% 55%), hsl(45 100% 55%)) border-box;
+                linear-gradient(135deg, hsl(174 72% 40%), hsl(280 100% 55%), hsl(210 100% 50%), hsl(174 72% 40%)) border-box;
     border: 2px solid transparent;
     animation: border-rotate 3s linear infinite;
   }
@@ -200,10 +200,10 @@
 /* Animations */
 @keyframes legendary-pulse {
   0%, 100% {
-    box-shadow: 0 0 30px hsl(45 100% 55% / 0.7), 0 0 60px hsl(45 100% 55% / 0.5), 0 0 100px hsl(45 100% 55% / 0.3);
+    box-shadow: 0 0 30px hsl(45 100% 50% / 0.5), 0 0 60px hsl(45 100% 50% / 0.4), 0 0 100px hsl(45 100% 50% / 0.2);
   }
   50% {
-    box-shadow: 0 0 50px hsl(45 100% 55% / 0.9), 0 0 80px hsl(45 100% 55% / 0.6), 0 0 120px hsl(45 100% 55% / 0.4);
+    box-shadow: 0 0 50px hsl(45 100% 50% / 0.7), 0 0 80px hsl(45 100% 50% / 0.5), 0 0 120px hsl(45 100% 50% / 0.3);
   }
 }
 
@@ -218,33 +218,33 @@
 
 @keyframes badge-pulse {
   0%, 100% {
-    filter: drop-shadow(0 0 5px hsl(45 100% 55% / 0.5));
+    filter: drop-shadow(0 0 5px hsl(174 72% 40% / 0.4));
   }
   50% {
-    filter: drop-shadow(0 0 15px hsl(45 100% 55% / 0.8));
+    filter: drop-shadow(0 0 15px hsl(174 72% 40% / 0.7));
   }
 }
 
 @keyframes border-rotate {
   0% {
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(0deg, hsl(45 100% 55%), hsl(280 100% 60%), hsl(210 100% 55%), hsl(45 100% 55%)) border-box;
+                linear-gradient(0deg, hsl(174 72% 40%), hsl(280 100% 55%), hsl(210 100% 50%), hsl(174 72% 40%)) border-box;
   }
   25% {
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(90deg, hsl(45 100% 55%), hsl(280 100% 60%), hsl(210 100% 55%), hsl(45 100% 55%)) border-box;
+                linear-gradient(90deg, hsl(174 72% 40%), hsl(280 100% 55%), hsl(210 100% 50%), hsl(174 72% 40%)) border-box;
   }
   50% {
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(180deg, hsl(45 100% 55%), hsl(280 100% 60%), hsl(210 100% 55%), hsl(45 100% 55%)) border-box;
+                linear-gradient(180deg, hsl(174 72% 40%), hsl(280 100% 55%), hsl(210 100% 50%), hsl(174 72% 40%)) border-box;
   }
   75% {
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(270deg, hsl(45 100% 55%), hsl(280 100% 60%), hsl(210 100% 55%), hsl(45 100% 55%)) border-box;
+                linear-gradient(270deg, hsl(174 72% 40%), hsl(280 100% 55%), hsl(210 100% 50%), hsl(174 72% 40%)) border-box;
   }
   100% {
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(360deg, hsl(45 100% 55%), hsl(280 100% 60%), hsl(210 100% 55%), hsl(45 100% 55%)) border-box;
+                linear-gradient(360deg, hsl(174 72% 40%), hsl(280 100% 55%), hsl(210 100% 50%), hsl(174 72% 40%)) border-box;
   }
 }
 
@@ -273,9 +273,9 @@
 .animate-shimmer {
   background: linear-gradient(
     90deg,
-    hsl(230 20% 15%) 0%,
-    hsl(230 20% 25%) 50%,
-    hsl(230 20% 15%) 100%
+    hsl(180 10% 92%) 0%,
+    hsl(180 10% 97%) 50%,
+    hsl(180 10% 92%) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;

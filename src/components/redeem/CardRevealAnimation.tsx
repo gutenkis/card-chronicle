@@ -158,10 +158,10 @@ const CardRevealAnimation = ({
         )}
 
         {/* Pack / Card container */}
-        <div className="relative">
+        <div className="relative flex flex-col items-center justify-center">
           {/* Pack envelope (back) */}
           <motion.div
-            className="absolute inset-0 w-64 h-80 mx-auto"
+            className="w-64 h-80"
             initial={{ rotateY: 0 }}
             animate={{
               rotateY: stage === 'pack' ? 0 : 180,
@@ -186,7 +186,7 @@ const CardRevealAnimation = ({
 
           {/* Opening animation - pack splitting */}
           <motion.div
-            className="absolute inset-0 w-64 h-80 mx-auto pointer-events-none"
+            className="absolute w-64 h-80 pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{
               opacity: stage === 'opening' ? 1 : 0,
@@ -282,7 +282,7 @@ const CardRevealAnimation = ({
 
           {/* Card title */}
           <motion.div
-            className="absolute -bottom-20 left-1/2 -translate-x-1/2 text-center w-full"
+            className="mt-8 text-center w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: stage === 'done' ? 1 : 0,

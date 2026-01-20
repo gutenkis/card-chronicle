@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/layout/Header';
 import CollectibleCard, { CardRarity } from '@/components/cards/CollectibleCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Calendar } from 'lucide-react';
+import { Sparkles, Calendar, ArrowUpDown } from 'lucide-react';
 
 interface Season {
   id: string;
@@ -30,6 +30,15 @@ interface UserCard {
   event_id: string;
 }
 
+type SortOption = 'date_desc' | 'date_asc' | 'rarity_desc' | 'rarity_asc';
+
+const rarityOrder: Record<CardRarity, number> = {
+  comum: 1,
+  raro: 2,
+  epico: 3,
+  lendario: 4,
+};
+
 const Index = () => {
   const { user } = useAuth();
   const [seasons, setSeasons] = useState<Season[]>([]);
@@ -37,6 +46,7 @@ const Index = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [userCards, setUserCards] = useState<UserCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption>('date_desc');
 
   useEffect(() => {
     if (user) {
@@ -74,6 +84,21 @@ const Index = () => {
   const isCardRedeemed = (eventId: string) => userCards.some(uc => uc.event_id === eventId);
   const collectedCount = events.filter(e => isCardRedeemed(e.id)).length;
 
+  const sortedEvents = [...events].sort((a, b) => {
+    switch (sortBy) {
+      case 'date_desc':
+        return new Date(b.event_date).getTime() - new Date(a.event_date).getTime();
+      case 'date_asc':
+        return new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+      case 'rarity_desc':
+        return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+      case 'rarity_asc':
+        return rarityOrder[a.rarity] - rarityOrder[b.rarity];
+      default:
+        return 0;
+    }
+  });
+
   if (!user) {
     return (
       <div className="min-h-screen">
@@ -81,8 +106,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-20 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto">
             <Sparkles className="w-20 h-20 text-primary mx-auto mb-6 animate-glow-pulse" />
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              CardVault
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 text-foreground">
+              Cards RC
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Colecione cards exclusivos de eventos especiais. Cada momento, uma memória única.
@@ -102,19 +127,33 @@ const Index = () => {
             <h1 className="font-display text-2xl font-bold">Minha Coleção</h1>
             <p className="text-muted-foreground">{collectedCount} de {events.length} cards coletados</p>
           </div>
-          {seasons.length > 0 && (
-            <Select value={selectedSeason} onValueChange={setSelectedSeason}>
-              <SelectTrigger className="w-full md:w-64 glass">
-                <Calendar className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Selecione a temporada" />
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+              <SelectTrigger className="w-full sm:w-48 glass border border-foreground/20">
+                <ArrowUpDown className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Ordenar por" />
               </SelectTrigger>
               <SelectContent>
-                {seasons.map(s => (
-                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                ))}
+                <SelectItem value="date_desc">Data (mais recente)</SelectItem>
+                <SelectItem value="date_asc">Data (mais antigo)</SelectItem>
+                <SelectItem value="rarity_desc">Raridade (maior)</SelectItem>
+                <SelectItem value="rarity_asc">Raridade (menor)</SelectItem>
               </SelectContent>
             </Select>
-          )}
+            {seasons.length > 0 && (
+              <Select value={selectedSeason} onValueChange={setSelectedSeason}>
+                <SelectTrigger className="w-full sm:w-64 glass border border-foreground/20">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Selecione a temporada" />
+                </SelectTrigger>
+                <SelectContent>
+                  {seasons.map(s => (
+                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
 
         {events.length === 0 ? (
@@ -124,7 +163,7 @@ const Index = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {events.map((event, i) => (
+            {sortedEvents.map((event, i) => (
               <motion.div key={event.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <CollectibleCard
                   id={event.id}
