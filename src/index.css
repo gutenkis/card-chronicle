@@ -57,16 +57,16 @@
     --rarity-lendario: 45 100% 50%;
 
     /* Gradients for rarities */
-    --gradient-comum: linear-gradient(135deg, hsl(180 10% 45%), hsl(180 10% 60%));
-    --gradient-raro: linear-gradient(135deg, hsl(200 100% 45%), hsl(220 100% 55%));
-    --gradient-epico: linear-gradient(135deg, hsl(260 100% 50%), hsl(300 100% 55%));
-    --gradient-lendario: linear-gradient(135deg, hsl(35 100% 50%), hsl(55 100% 55%), hsl(35 100% 50%));
+    --gradient-comum: linear-gradient(90deg, hsl(180 10% 45%), hsl(0, 5%, 88%), hsl(180 10% 45%));
+    --gradient-raro: linear-gradient(90deg, hsl(230 100% 55%), hsl(180, 61%, 76%), hsl(230 100% 55%));
+    --gradient-epico: linear-gradient(90deg, hsl(260, 100%, 41%), hsl(300, 96%, 74%), hsl(260, 100%, 41%));
+    --gradient-lendario: linear-gradient(90deg, hsl(32, 100%, 50%), hsl(55 100% 55%), hsl(32, 100%, 50%));
 
     /* Glow effects */
     --glow-comum: 0 0 10px hsl(180 10% 50% / 0.2);
-    --glow-raro: 0 0 20px hsl(210 100% 50% / 0.3), 0 0 40px hsl(210 100% 50% / 0.2);
-    --glow-epico: 0 0 25px hsl(280 100% 55% / 0.4), 0 0 50px hsl(280 100% 55% / 0.3);
-    --glow-lendario: 0 0 30px hsl(45 100% 50% / 0.5), 0 0 60px hsl(45 100% 50% / 0.4), 0 0 100px hsl(45 100% 50% / 0.2);
+    --glow-raro: 0 0 10px hsl(210 100% 50% / 0.3), 0 0 10px hsl(210 100% 50% / 0.2);
+    --glow-epico: 0 0 10px hsl(280 100% 55% / 0.4), 0 0 10px hsl(280 100% 55% / 0.3);
+    --glow-lendario: 0 0 10px hsl(45 100% 50% / 0.5), 0 0 10px hsl(45 100% 50% / 0.4), 0 0 30px hsl(45 100% 50% / 0.2);
 
     /* Sidebar */
     --sidebar-background: 180 15% 98%;
@@ -119,7 +119,6 @@
     @apply relative overflow-hidden border-2 border-foreground/50;
     background: var(--gradient-lendario);
     box-shadow: var(--glow-lendario);
-    animation: legendary-pulse 2s ease-in-out infinite;
   }
 
   /* Mystery card */
@@ -160,7 +159,7 @@
   .variant-holographic {
     background: linear-gradient(
       135deg,
-      hsl(0 100% 70% / 0.15) 0%,
+      hsla(0, 91%, 46%, 0.15) 0%,
       hsl(60 100% 70% / 0.15) 16%,
       hsl(120 100% 70% / 0.15) 32%,
       hsl(180 100% 70% / 0.15) 48%,
@@ -176,17 +175,7 @@
   /* Diamond variant - crystal blue effect */
   .card-diamante {
     position: relative;
-    border: 3px solid transparent !important;
-    background: 
-      linear-gradient(hsl(180 15% 98%), hsl(180 15% 98%)) padding-box,
-      linear-gradient(
-        135deg,
-        hsl(200 100% 70%) 0%,
-        hsl(210 100% 85%) 25%,
-        hsl(195 100% 75%) 50%,
-        hsl(220 100% 80%) 75%,
-        hsl(200 100% 70%) 100%
-      ) border-box;
+    outline: 3px solid transparent !important;
     box-shadow: 
       0 0 15px hsl(200 100% 70% / 0.4),
       0 0 30px hsl(210 100% 75% / 0.3),
@@ -220,11 +209,11 @@
     width: 200%;
     height: 200%;
     background: linear-gradient(
-      45deg,
+      90deg,
       transparent 40%,
-      hsl(200 100% 95% / 0.4) 45%,
-      hsl(200 100% 98% / 0.6) 50%,
-      hsl(200 100% 95% / 0.4) 55%,
+      hsla(201, 94%, 67%, 0.4) 45%,
+      hsla(201, 94%, 67%, 0.6) 50%,
+      hsla(201, 94%, 67%, 0.4) 55%,
       transparent 60%
     );
     animation: diamond-flash 4s ease-in-out infinite;
@@ -261,26 +250,48 @@
   .card-reliquia {
     position: relative;
     box-shadow: 
-      0 0 20px hsl(45 100% 50% / 0.6),
-      0 0 40px hsl(35 100% 45% / 0.4),
-      0 0 60px hsl(25 100% 40% / 0.3),
-      inset 0 0 20px hsl(45 100% 50% / 0.2);
-    animation: relic-pulse 2.5s ease-in-out infinite;
+      0 0 10px hsl(45 100% 50% / 0.6),
+      0 0 20px hsl(35 100% 45% / 0.4),
+      0 0 30px hsl(25 100% 40% / 0.3),
+      inset 0 0 10px hsl(45 100% 50% / 0.2);
+      animation: relic-border-shine 3s ease-in-out infinite;
   }
 
   .card-reliquia::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      135deg,
-      hsl(45 100% 50% / 0.15),
-      hsl(35 100% 40% / 0.1),
-      hsl(45 100% 50% / 0.15)
-    );
-    border-radius: inherit;
+    /* background: linear-gradient(
+      45deg,
+      transparent 40%,
+      hsl(200 100% 95% / 0.4) 45%,
+      hsl(200 100% 98% / 0.6) 50%,
+      hsl(200 100% 95% / 0.4) 55%,
+      transparent 60%
+    ); */
     pointer-events: none;
     z-index: 10;
+    animation: diamond-flash 4s ease-in-out infinite;
+  }
+
+  .card-reliquia::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      90deg,
+      transparent 30%,
+      hsla(46, 100%, 73%, 0.4) 45%,
+      hsla(46, 100%, 80%, 0.6) 50%,
+      hsla(46, 100%, 73%, 0.4) 55%,
+      transparent 60%
+    );
+    animation: diamond-flash 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 11;
   }
 
   .variant-relic {
@@ -364,10 +375,10 @@
 /* Animations */
 @keyframes legendary-pulse {
   0%, 100% {
-    box-shadow: 0 0 30px hsl(45 100% 50% / 0.5), 0 0 60px hsl(45 100% 50% / 0.4), 0 0 100px hsl(45 100% 50% / 0.2);
+    box-shadow: 0 0 15px hsl(45 100% 50% / 0.5), 0 0 30px hsl(45 100% 50% / 0.4), 0 0 50px hsl(45 100% 50% / 0.2);
   }
   50% {
-    box-shadow: 0 0 50px hsl(45 100% 50% / 0.7), 0 0 80px hsl(45 100% 50% / 0.5), 0 0 120px hsl(45 100% 50% / 0.3);
+    box-shadow: 0 0 25px hsl(45 100% 50% / 0.7), 0 0 40px hsl(45 100% 50% / 0.5), 0 0 60px hsl(45 100% 50% / 0.3);
   }
 }
 
@@ -405,15 +416,15 @@
 @keyframes diamond-border-shine {
   0%, 100% {
     box-shadow: 
-      0 0 15px hsl(200 100% 70% / 0.4),
-      0 0 30px hsl(210 100% 75% / 0.3),
-      inset 0 0 20px hsl(200 100% 80% / 0.1);
+      0 0 10px hsla(200, 89%, 64%, 0.4),
+      0 0 25px hsla(210, 94%, 51%, 0.3),
+      inset 0 0 20px hsla(200, 89%, 80%, 0.1);
   }
   50% {
     box-shadow: 
-      0 0 25px hsl(200 100% 70% / 0.6),
-      0 0 50px hsl(210 100% 75% / 0.4),
-      inset 0 0 30px hsl(200 100% 80% / 0.2);
+      0 0 15px hsla(200, 89%, 64%, 0.6),
+      0 0 30px hsla(210, 94%, 51%, 0.4),
+      inset 0 0 30px hsla(200, 89%, 80%, 0.2);
   }
 }
 
@@ -428,20 +439,18 @@
   }
 }
 
-@keyframes relic-pulse {
+@keyframes relic-border-shine {
   0%, 100% {
     box-shadow: 
-      0 0 20px hsl(45 100% 50% / 0.6),
-      0 0 40px hsl(35 100% 45% / 0.4),
-      0 0 60px hsl(25 100% 40% / 0.3),
-      inset 0 0 20px hsl(45 100% 50% / 0.2);
+      0 0 20px hsla(45, 100%, 50%, 0.6),
+      0 0 40px hsla(35, 100%, 45%, 0.4),
+      inset 0 0 20px hsla(25, 100%, 40%, 0.1);
   }
   50% {
     box-shadow: 
-      0 0 30px hsl(45 100% 50% / 0.8),
-      0 0 60px hsl(35 100% 45% / 0.6),
-      0 0 90px hsl(25 100% 40% / 0.4),
-      inset 0 0 30px hsl(45 100% 50% / 0.3);
+      0 0 25px hsla(45, 100%, 50%, 0.6),
+      0 0 50px hsla(35, 100%, 45%, 0.4),
+      inset 0 0 20px hsla(45, 100%, 50%, 0.2);
   }
 }
 

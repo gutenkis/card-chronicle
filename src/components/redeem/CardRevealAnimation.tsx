@@ -200,13 +200,13 @@ const CardRevealAnimation = ({
         <div className="relative flex flex-col items-center justify-center">
           {/* Pack envelope (back) */}
           <motion.div
-            className="w-64 h-80"
+            className="w-64 h-20"
             initial={{ rotateY: 0 }}
             animate={{
               rotateY: stage === 'pack' ? 0 : 180,
               opacity: stage === 'reveal' || stage === 'done' ? 0 : 1,
             }}
-            transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
+            transition={{ duration: 2, type: 'spring', stiffness: 100 }}
             style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
           >
             <div className={`w-full h-full rounded-2xl bg-gradient-to-br ${config.gradient} p-1`}>

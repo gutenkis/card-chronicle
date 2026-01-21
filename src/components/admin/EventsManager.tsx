@@ -560,7 +560,7 @@ const EventsManager = () => {
                 )}
                 <p>
                   <span className="font-semibold">Data:</span>{' '}
-                  {format(new Date(selectedEvent.event_date), 'dd MMM yyyy', { locale: ptBR })}
+                  {selectedEvent.event_date.split('-').reverse().join('/')}
                 </p>
               </div>
               <div className="p-3 rounded-lg bg-muted/50 space-y-2">

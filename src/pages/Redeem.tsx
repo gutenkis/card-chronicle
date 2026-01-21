@@ -51,7 +51,7 @@ const getRandomVariant = (): CardVariant => {
 const getVariantMessage = (variant: CardVariant): string => {
   switch (variant) {
     case "reliquia":
-      return "🏆 INCRÍVEL! Você encontrou uma RELÍQUIA!";
+      return "🏆 INCRÍVEL! Você encontrou a variante mais rara de todas, uma RELÍQUIA!";
     case "holografica":
       return "✨ RARO! Card Holográfico desbloqueado!";
     case "edicao_diamante":
