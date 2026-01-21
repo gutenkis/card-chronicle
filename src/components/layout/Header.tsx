@@ -46,42 +46,46 @@ const Header = () => {
             <Sparkles className="w-5 h-5 text-primary" />
           </div>
           <span className="font-display text-xl font-bold text-foreground">
-            Cards RC
+            Renascer Cards
           </span>
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            to="/"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Minha Coleção
-          </Link>
-          <Link
-            to="/redeem"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-          >
-            <QrCode className="w-4 h-4" />
-            Resgatar
-          </Link>
-          <Link
-            to="/ranking"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-          >
-            <Trophy className="w-4 h-4" />
-            Ranking
-          </Link>
-          {isAdmin && (
+
+        {user && (
+          <nav className="hidden md:flex items-center gap-6">
             <Link
-              to="/admin"
+              to="/"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Minha Coleção
+            </Link>
+            <Link
+              to="/redeem"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
             >
-              <LayoutDashboard className="w-4 h-4" />
-              Admin
+              <QrCode className="w-4 h-4" />
+              Resgatar
             </Link>
-          )}
-        </nav>
+            <Link
+              to="/ranking"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <Trophy className="w-4 h-4" />
+              Ranking
+            </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Admin
+              </Link>
+            )}
+          </nav>
+        )}
+        
 
         {/* User menu */}
         {user ? (

@@ -129,10 +129,10 @@ const Auth = () => {
               <Sparkles className="w-8 h-8 text-primary" />
             </motion.div>
             <h1 className="font-display text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              Cards RC
+              Renascer Cards
             </h1>
             <p className="text-muted-foreground mt-2">
-              Colecione momentos, guarde memórias
+              Participe, resgate e torça para conseguir uma carta especial!
             </p>
           </div>
 

@@ -113,10 +113,10 @@ const Index = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto">
             <Sparkles className="w-20 h-20 text-primary mx-auto mb-6 animate-glow-pulse" />
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 text-foreground">
-              Cards RC
+              Renascer Cards
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Colecione cards exclusivos de eventos especiais. Cada momento, uma memória única.
+              Participe, resgate e torça para conseguir uma carta especial! <br/> Colecione cards exclusivos dos eventos do RC, seja o primeiro e concorra a prêmios!
             </p>
           </motion.div>
         </div>

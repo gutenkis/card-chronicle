@@ -206,14 +206,14 @@ const CardRevealAnimation = ({
               rotateY: stage === 'pack' ? 0 : 180,
               opacity: stage === 'reveal' || stage === 'done' ? 0 : 1,
             }}
-            transition={{ duration: 2, type: 'spring', stiffness: 100 }}
+            transition={{ duration: 4, type: 'spring', stiffness: 100 }}
             style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
           >
             <div className={`w-full h-full rounded-2xl bg-gradient-to-br ${config.gradient} p-1`}>
               <div className="w-full h-full rounded-xl bg-background/90 flex flex-col items-center justify-center gap-4">
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
+                  animate={{ scale: [1, 1.4, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
                   <Sparkles className="w-16 h-16 text-primary" />
                 </motion.div>
@@ -238,7 +238,7 @@ const CardRevealAnimation = ({
                 rotateX: stage === 'opening' || stage === 'reveal' || stage === 'done' ? -90 : 0,
                 opacity: stage === 'reveal' || stage === 'done' ? 0 : 1,
               }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 1, delay: 0.3 }}
             />
             {/* Bottom half */}
             <motion.div
@@ -247,7 +247,7 @@ const CardRevealAnimation = ({
                 rotateX: stage === 'opening' || stage === 'reveal' || stage === 'done' ? 90 : 0,
                 opacity: stage === 'reveal' || stage === 'done' ? 0 : 1,
               }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 1, delay: 0.3 }}
             />
           </motion.div>
 
@@ -260,7 +260,7 @@ const CardRevealAnimation = ({
               rotateY: stage === 'reveal' || stage === 'done' ? 0 : 180,
             }}
             transition={{
-              duration: 0.8,
+              duration: 1.6,
               type: 'spring',
               stiffness: 100,
               damping: 15,
@@ -302,7 +302,7 @@ const CardRevealAnimation = ({
                       x: ['-200%', '200%'],
                     }}
                     transition={{
-                      duration: 1.5,
+                      duration: 3,
                       delay: 0.5,
                       repeat: Infinity,
                       repeatDelay: 3,

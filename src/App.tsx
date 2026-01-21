@@ -26,7 +26,7 @@ const App = () => (
             <Route path="/redeem" element={<Redeem />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Index />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
