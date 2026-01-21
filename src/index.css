@@ -173,9 +173,25 @@
     mix-blend-mode: overlay;
   }
 
-  /* Diamond variant - sparkle effect */
+  /* Diamond variant - crystal blue effect */
   .card-diamante {
     position: relative;
+    border: 3px solid transparent !important;
+    background: 
+      linear-gradient(hsl(180 15% 98%), hsl(180 15% 98%)) padding-box,
+      linear-gradient(
+        135deg,
+        hsl(200 100% 70%) 0%,
+        hsl(210 100% 85%) 25%,
+        hsl(195 100% 75%) 50%,
+        hsl(220 100% 80%) 75%,
+        hsl(200 100% 70%) 100%
+      ) border-box;
+    box-shadow: 
+      0 0 15px hsl(200 100% 70% / 0.4),
+      0 0 30px hsl(210 100% 75% / 0.3),
+      inset 0 0 20px hsl(200 100% 80% / 0.1);
+    animation: diamond-border-shine 3s ease-in-out infinite;
   }
 
   .card-diamante::before {
@@ -184,9 +200,11 @@
     inset: 0;
     background: linear-gradient(
       135deg,
-      hsl(200 100% 90% / 0.3),
-      hsl(220 100% 95% / 0.1),
-      hsl(200 100% 90% / 0.3)
+      hsl(200 100% 90% / 0.15) 0%,
+      hsl(210 100% 95% / 0.05) 25%,
+      hsl(195 100% 90% / 0.2) 50%,
+      hsl(220 100% 95% / 0.05) 75%,
+      hsl(200 100% 90% / 0.15) 100%
     );
     border-radius: inherit;
     pointer-events: none;
@@ -194,13 +212,36 @@
     animation: diamond-sparkle 2s ease-in-out infinite;
   }
 
+  .card-diamante::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 40%,
+      hsl(200 100% 95% / 0.4) 45%,
+      hsl(200 100% 98% / 0.6) 50%,
+      hsl(200 100% 95% / 0.4) 55%,
+      transparent 60%
+    );
+    animation: diamond-flash 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 11;
+  }
+
   .variant-diamond {
     background: linear-gradient(
       135deg,
-      hsl(200 100% 90% / 0.2) 0%,
-      hsl(220 100% 95% / 0.05) 50%,
-      hsl(200 100% 90% / 0.2) 100%
+      hsl(200 100% 85% / 0.25) 0%,
+      hsl(210 100% 90% / 0.1) 30%,
+      hsl(195 100% 85% / 0.2) 50%,
+      hsl(210 100% 90% / 0.1) 70%,
+      hsl(200 100% 85% / 0.25) 100%
     );
+    background-size: 200% 200%;
     animation: diamond-shine 3s ease-in-out infinite;
   }
 
@@ -346,6 +387,32 @@
   }
   50% {
     background-position: 100% 100%;
+  }
+}
+
+@keyframes diamond-border-shine {
+  0%, 100% {
+    box-shadow: 
+      0 0 15px hsl(200 100% 70% / 0.4),
+      0 0 30px hsl(210 100% 75% / 0.3),
+      inset 0 0 20px hsl(200 100% 80% / 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 25px hsl(200 100% 70% / 0.6),
+      0 0 50px hsl(210 100% 75% / 0.4),
+      inset 0 0 30px hsl(200 100% 80% / 0.2);
+  }
+}
+
+@keyframes diamond-flash {
+  0%, 100% {
+    transform: translateX(-100%) rotate(45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(100%) rotate(45deg);
+    opacity: 1;
   }
 }
 
