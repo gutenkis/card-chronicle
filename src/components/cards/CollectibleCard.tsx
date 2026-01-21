@@ -166,6 +166,7 @@ const CollectibleCard = ({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       layoutId={`card-${id}`}
+      className="w-full"
     >
       <Tilt
         tiltMaxAngleX={15}
@@ -174,11 +175,11 @@ const CollectibleCard = ({
         scale={1.08}
         transitionSpeed={400}
         gyroscope={true}
-        className="cursor-pointer"
+        className="cursor-pointer w-full"
       >
         <div
           className={cn(
-            "rounded-xl p-1 transition-all duration-300",
+            "rounded-xl p-1 transition-all duration-300 w-full",
             config.borderClass,
             variant === 'reliquia' && 'card-reliquia',
             variant === 'holografica' && 'card-holografica',
