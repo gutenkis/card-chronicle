@@ -129,6 +129,117 @@
     filter: grayscale(0.8);
   }
 
+  /* ===== VARIANT STYLES ===== */
+  
+  /* Holographic variant - rainbow shimmer effect */
+  .card-holografica {
+    position: relative;
+  }
+
+  .card-holografica::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      hsl(0 100% 50% / 0.2),
+      hsl(60 100% 50% / 0.2),
+      hsl(120 100% 50% / 0.2),
+      hsl(180 100% 50% / 0.2),
+      hsl(240 100% 50% / 0.2),
+      hsl(300 100% 50% / 0.2),
+      hsl(360 100% 50% / 0.2)
+    );
+    background-size: 400% 400%;
+    animation: holographic-rainbow 3s ease infinite;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .variant-holographic {
+    background: linear-gradient(
+      135deg,
+      hsl(0 100% 70% / 0.15) 0%,
+      hsl(60 100% 70% / 0.15) 16%,
+      hsl(120 100% 70% / 0.15) 32%,
+      hsl(180 100% 70% / 0.15) 48%,
+      hsl(240 100% 70% / 0.15) 64%,
+      hsl(300 100% 70% / 0.15) 80%,
+      hsl(360 100% 70% / 0.15) 100%
+    );
+    background-size: 300% 300%;
+    animation: holographic-rainbow 4s ease infinite;
+    mix-blend-mode: overlay;
+  }
+
+  /* Diamond variant - sparkle effect */
+  .card-diamante {
+    position: relative;
+  }
+
+  .card-diamante::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      hsl(200 100% 90% / 0.3),
+      hsl(220 100% 95% / 0.1),
+      hsl(200 100% 90% / 0.3)
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 10;
+    animation: diamond-sparkle 2s ease-in-out infinite;
+  }
+
+  .variant-diamond {
+    background: linear-gradient(
+      135deg,
+      hsl(200 100% 90% / 0.2) 0%,
+      hsl(220 100% 95% / 0.05) 50%,
+      hsl(200 100% 90% / 0.2) 100%
+    );
+    animation: diamond-shine 3s ease-in-out infinite;
+  }
+
+  /* Relic variant - ancient golden glow */
+  .card-reliquia {
+    position: relative;
+    box-shadow: 
+      0 0 20px hsl(45 100% 50% / 0.6),
+      0 0 40px hsl(35 100% 45% / 0.4),
+      0 0 60px hsl(25 100% 40% / 0.3),
+      inset 0 0 20px hsl(45 100% 50% / 0.2);
+    animation: relic-pulse 2.5s ease-in-out infinite;
+  }
+
+  .card-reliquia::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      hsl(45 100% 50% / 0.15),
+      hsl(35 100% 40% / 0.1),
+      hsl(45 100% 50% / 0.15)
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .variant-relic {
+    background: radial-gradient(
+      ellipse at center,
+      hsl(45 100% 50% / 0.3) 0%,
+      hsl(35 100% 40% / 0.1) 50%,
+      hsl(45 100% 50% / 0.2) 100%
+    );
+    animation: relic-glow 3s ease-in-out infinite;
+  }
+
   /* Holographic effect */
   .holographic {
     background: linear-gradient(
@@ -204,6 +315,63 @@
   }
   50% {
     box-shadow: 0 0 50px hsl(45 100% 50% / 0.7), 0 0 80px hsl(45 100% 50% / 0.5), 0 0 120px hsl(45 100% 50% / 0.3);
+  }
+}
+
+/* Variant animations */
+@keyframes holographic-rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes diamond-sparkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes diamond-shine {
+  0%, 100% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes relic-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px hsl(45 100% 50% / 0.6),
+      0 0 40px hsl(35 100% 45% / 0.4),
+      0 0 60px hsl(25 100% 40% / 0.3),
+      inset 0 0 20px hsl(45 100% 50% / 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px hsl(45 100% 50% / 0.8),
+      0 0 60px hsl(35 100% 45% / 0.6),
+      0 0 90px hsl(25 100% 40% / 0.4),
+      inset 0 0 30px hsl(45 100% 50% / 0.3);
+  }
+}
+
+@keyframes relic-glow {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
   }
 }
 

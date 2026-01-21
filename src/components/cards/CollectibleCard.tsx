@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
-import { HelpCircle, Clock, Lock } from 'lucide-react';
+import { HelpCircle, Clock, Lock, Gem, Crown, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type CardRarity = 'comum' | 'raro' | 'epico' | 'lendario';
+export type CardVariant = 'comum' | 'holografica' | 'edicao_diamante' | 'reliquia';
 
 interface CollectibleCardProps {
   id: string;
   title: string;
   imageUrl: string;
   rarity: CardRarity;
+  variant?: CardVariant;
   eventDate: string;
   preacher?: string;
   theme?: string;
@@ -17,6 +19,33 @@ interface CollectibleCardProps {
   redemptionDeadline: Date;
   onClick?: () => void;
 }
+
+const variantConfig = {
+  comum: {
+    label: '',
+    overlayClass: '',
+    badgeClass: '',
+    icon: null,
+  },
+  holografica: {
+    label: 'Holográfica',
+    overlayClass: 'variant-holographic',
+    badgeClass: 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white',
+    icon: Sparkles,
+  },
+  edicao_diamante: {
+    label: 'Diamante',
+    overlayClass: 'variant-diamond',
+    badgeClass: 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white',
+    icon: Gem,
+  },
+  reliquia: {
+    label: 'Relíquia',
+    overlayClass: 'variant-relic',
+    badgeClass: 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-black',
+    icon: Crown,
+  },
+};
 
 const rarityConfig = {
   comum: {
@@ -116,6 +145,7 @@ const CollectibleCard = ({
   title,
   imageUrl,
   rarity,
+  variant = 'comum',
   eventDate,
   preacher,
   theme,
@@ -124,6 +154,8 @@ const CollectibleCard = ({
   onClick,
 }: CollectibleCardProps) => {
   const config = rarityConfig[rarity];
+  const variantStyle = variantConfig[variant];
+  const VariantIcon = variantStyle.icon;
 
   if (!isRedeemed) {
     return <MysteryCard deadline={redemptionDeadline} onClick={onClick} />;
@@ -147,7 +179,10 @@ const CollectibleCard = ({
         <div
           className={cn(
             "rounded-xl p-1 transition-all duration-300",
-            config.borderClass
+            config.borderClass,
+            variant === 'reliquia' && 'card-reliquia',
+            variant === 'holografica' && 'card-holografica',
+            variant === 'edicao_diamante' && 'card-diamante'
           )}
           onClick={onClick}
         >
@@ -160,6 +195,11 @@ const CollectibleCard = ({
               className="w-full h-full object-cover"
             />
             
+            {/* Variant overlay */}
+            {variant !== 'comum' && (
+              <div className={cn("absolute inset-0 pointer-events-none", variantStyle.overlayClass)} />
+            )}
+            
             {/* Holographic overlay for legendary */}
             {rarity === 'lendario' && (
               <div className="absolute inset-0 holographic pointer-events-none" />
@@ -169,6 +209,19 @@ const CollectibleCard = ({
             <div className={cn(
               "absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80"
             )} />
+
+            {/* Variant badge */}
+            {variant !== 'comum' && (
+              <div className="absolute top-2 left-2">
+                <span className={cn(
+                  "px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg",
+                  variantStyle.badgeClass
+                )}>
+                  {VariantIcon && <VariantIcon className="w-3 h-3" />}
+                  {variantStyle.label}
+                </span>
+              </div>
+            )}
 
             {/* Rarity badge */}
             <div className="absolute top-2 right-2">

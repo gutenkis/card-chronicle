@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Star } from 'lucide-react';
+import { Sparkles, Star, Gem, Crown } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
+
+export type CardVariant = 'comum' | 'holografica' | 'edicao_diamante' | 'reliquia';
 
 interface CardRevealAnimationProps {
   isOpen: boolean;
@@ -9,6 +11,7 @@ interface CardRevealAnimationProps {
   cardImage: string;
   cardTitle: string;
   rarity: string;
+  variant?: CardVariant;
 }
 
 const CardRevealAnimation = ({
@@ -17,6 +20,7 @@ const CardRevealAnimation = ({
   cardImage,
   cardTitle,
   rarity,
+  variant = 'comum',
 }: CardRevealAnimationProps) => {
   const [stage, setStage] = useState<'pack' | 'opening' | 'reveal' | 'done'>('pack');
 
@@ -73,6 +77,41 @@ const CardRevealAnimation = ({
   };
 
   const config = getRarityConfig(rarity);
+
+  const getVariantConfig = (variant: CardVariant) => {
+    switch (variant) {
+      case 'reliquia':
+        return {
+          label: '🏆 RELÍQUIA',
+          overlayClass: 'variant-relic',
+          extraGlow: 'shadow-[0_0_100px_40px_rgba(234,179,8,0.8)]',
+          icon: Crown,
+        };
+      case 'holografica':
+        return {
+          label: '✨ HOLOGRÁFICA',
+          overlayClass: 'variant-holographic',
+          extraGlow: 'shadow-[0_0_60px_25px_rgba(236,72,153,0.5)]',
+          icon: Sparkles,
+        };
+      case 'edicao_diamante':
+        return {
+          label: '💎 DIAMANTE',
+          overlayClass: 'variant-diamond',
+          extraGlow: 'shadow-[0_0_50px_20px_rgba(34,211,238,0.5)]',
+          icon: Gem,
+        };
+      default:
+        return {
+          label: '',
+          overlayClass: '',
+          extraGlow: '',
+          icon: null,
+        };
+    }
+  };
+
+  const variantConfig = getVariantConfig(variant);
 
   const generateParticles = (count: number) => {
     return Array.from({ length: count }).map((_, i) => ({
@@ -235,15 +274,19 @@ const CardRevealAnimation = ({
               transitionSpeed={400}
               className="cursor-pointer"
             >
-              <div className={`relative w-64 h-80 rounded-2xl ${config.glow}`}>
+              <div className={`relative w-64 h-80 rounded-2xl ${config.glow} ${variant !== 'comum' ? variantConfig.extraGlow : ''}`}>
                 {/* Animated border */}
                 <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${config.gradient} p-[3px] animate-pulse`}>
-                  <div className="w-full h-full rounded-2xl overflow-hidden">
+                  <div className="w-full h-full rounded-2xl overflow-hidden relative">
                     <img
                       src={cardImage}
                       alt={cardTitle}
                       className="w-full h-full object-cover"
                     />
+                    {/* Variant overlay */}
+                    {variant !== 'comum' && (
+                      <div className={`absolute inset-0 ${variantConfig.overlayClass}`} />
+                    )}
                   </div>
                 </div>
 
@@ -266,6 +309,18 @@ const CardRevealAnimation = ({
                     }}
                   />
                 </motion.div>
+
+                {/* Variant badge */}
+                {variant !== 'comum' && (
+                  <motion.div
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 text-black font-bold text-xs whitespace-nowrap shadow-lg"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    {variantConfig.label}
+                  </motion.div>
+                )}
 
                 {/* Rarity badge */}
                 <motion.div

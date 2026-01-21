@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/layout/Header';
-import CollectibleCard, { CardRarity } from '@/components/cards/CollectibleCard';
+import CollectibleCard, { CardRarity, CardVariant } from '@/components/cards/CollectibleCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sparkles, Calendar, ArrowUpDown } from 'lucide-react';
 
@@ -28,6 +28,7 @@ interface Event {
 
 interface UserCard {
   event_id: string;
+  variant: 'comum' | 'holografica' | 'edicao_diamante' | 'reliquia';
 }
 
 type SortOption = 'date_desc' | 'date_asc' | 'rarity_desc' | 'rarity_asc';
@@ -77,8 +78,13 @@ const Index = () => {
 
   const fetchUserCards = async () => {
     if (!user) return;
-    const { data } = await supabase.from('user_cards').select('event_id').eq('user_id', user.id);
+    const { data } = await supabase.from('user_cards').select('event_id, variant').eq('user_id', user.id);
     if (data) setUserCards(data);
+  };
+
+  const getCardVariant = (eventId: string) => {
+    const card = userCards.find(uc => uc.event_id === eventId);
+    return card?.variant || 'comum';
   };
 
   const isCardRedeemed = (eventId: string) => userCards.some(uc => uc.event_id === eventId);
@@ -170,6 +176,7 @@ const Index = () => {
                   title={event.title}
                   imageUrl={event.card_image_url}
                   rarity={event.rarity}
+                  variant={getCardVariant(event.id)}
                   eventDate={event.event_date}
                   preacher={event.preacher || undefined}
                   theme={event.theme || undefined}

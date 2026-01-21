@@ -15,13 +15,51 @@ import CardRevealAnimation from "@/components/redeem/CardRevealAnimation";
 
 type RedeemStatus = "idle" | "loading" | "success" | "error" | "expired" | "already_redeemed";
 
+export type CardVariant = "comum" | "holografica" | "edicao_diamante" | "reliquia";
+
 interface RedeemResult {
   status: RedeemStatus;
   message: string;
   cardTitle?: string;
   cardImage?: string;
   rarity?: string;
+  variant?: CardVariant;
 }
+
+// Probabilidades de variante (soma = 100%)
+const VARIANT_PROBABILITIES: { variant: CardVariant; chance: number }[] = [
+  { variant: "reliquia", chance: 3 },       // 3% - mais raro
+  { variant: "holografica", chance: 7 },    // 7% - segundo mais raro
+  { variant: "edicao_diamante", chance: 12 }, // 12% - médio
+  { variant: "comum", chance: 78 },         // 78% - mais comum
+];
+
+const getRandomVariant = (): CardVariant => {
+  const random = Math.random() * 100;
+  let cumulative = 0;
+  
+  for (const { variant, chance } of VARIANT_PROBABILITIES) {
+    cumulative += chance;
+    if (random < cumulative) {
+      return variant;
+    }
+  }
+  
+  return "comum";
+};
+
+const getVariantMessage = (variant: CardVariant): string => {
+  switch (variant) {
+    case "reliquia":
+      return "🏆 INCRÍVEL! Você encontrou uma RELÍQUIA!";
+    case "holografica":
+      return "✨ RARO! Card Holográfico desbloqueado!";
+    case "edicao_diamante":
+      return "💎 ESPECIAL! Edição Diamante obtida!";
+    default:
+      return "Card resgatado com sucesso!";
+  }
+};
 
 type InputMode = "choose" | "manual" | "scanner";
 
@@ -123,22 +161,27 @@ const RedeemPage = () => {
         return;
       }
 
-      // Redeem the card
+      // Determine random variant
+      const variant = getRandomVariant();
+
+      // Redeem the card with variant
       const { error: redeemError } = await supabase
         .from("user_cards")
         .insert({
           user_id: user.id,
           event_id: event.id,
+          variant: variant,
         });
 
       if (redeemError) throw redeemError;
 
       setResult({
         status: "success",
-        message: "Card resgatado com sucesso!",
+        message: getVariantMessage(variant),
         cardTitle: event.title,
         cardImage: event.card_image_url,
         rarity: event.rarity,
+        variant: variant,
       });
 
       // Show reveal animation
@@ -219,6 +262,7 @@ const RedeemPage = () => {
           cardImage={result.cardImage || ""}
           cardTitle={result.cardTitle || ""}
           rarity={result.rarity || "comum"}
+          variant={result.variant}
         />
         
         {/* QR Scanner Overlay */}

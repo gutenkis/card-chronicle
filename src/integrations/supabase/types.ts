@@ -203,18 +203,21 @@ export type Database = {
           id: string
           redeemed_at: string
           user_id: string
+          variant: Database["public"]["Enums"]["card_variant"]
         }
         Insert: {
           event_id: string
           id?: string
           redeemed_at?: string
           user_id: string
+          variant?: Database["public"]["Enums"]["card_variant"]
         }
         Update: {
           event_id?: string
           id?: string
           redeemed_at?: string
           user_id?: string
+          variant?: Database["public"]["Enums"]["card_variant"]
         }
         Relationships: [
           {
@@ -260,6 +263,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       card_rarity: "comum" | "raro" | "epico" | "lendario"
+      card_variant: "comum" | "holografica" | "edicao_diamante" | "reliquia"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -389,6 +393,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       card_rarity: ["comum", "raro", "epico", "lendario"],
+      card_variant: ["comum", "holografica", "edicao_diamante", "reliquia"],
     },
   },
 } as const
