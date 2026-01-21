@@ -245,6 +245,18 @@
     animation: diamond-shine 3s ease-in-out infinite;
   }
 
+  /* Ensure consistent card sizing across all variants */
+  .card-comum,
+  .card-raro,
+  .card-epico,
+  .card-lendario,
+  .card-diamante,
+  .card-holografica,
+  .card-reliquia,
+  .card-mystery {
+    box-sizing: border-box;
+  }
+
   /* Relic variant - ancient golden glow */
   .card-reliquia {
     position: relative;

@@ -41,7 +41,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Plus, Layers, Loader2, QrCode, Copy, Check, Upload, Trash2 } from 'lucide-react';
+import { Plus, Layers, Loader2, QrCode, Copy, Check, Upload, Trash2, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { QRCodeSVG } from 'qrcode.react';
@@ -106,6 +106,7 @@ const rarityColors: Record<CardRarity, string> = {
 
 const EventsManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -201,6 +202,58 @@ const EventsManager = () => {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: EventFormData & { id: string }) => {
+      let imageUrl = editingEvent?.card_image_url;
+
+      // Upload new image if provided
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('cards')
+          .upload(fileName, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('cards')
+          .getPublicUrl(fileName);
+        
+        imageUrl = urlData.publicUrl;
+      }
+
+      const { error } = await supabase
+        .from('events')
+        .update({
+          title: data.title,
+          theme: data.theme || null,
+          preacher: data.preacher || null,
+          event_date: data.event_date,
+          redemption_deadline: data.redemption_deadline,
+          season_id: data.season_id,
+          rarity: data.rarity,
+          card_image_url: imageUrl,
+        })
+        .eq('id', data.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast.success('Evento atualizado com sucesso!');
+      setIsDialogOpen(false);
+      setEditingEvent(null);
+      form.reset();
+      setImageFile(null);
+      setImagePreview(null);
+    },
+    onError: (error) => {
+      toast.error('Erro ao atualizar evento: ' + error.message);
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (eventId: string) => {
       // First delete related user_cards
@@ -238,7 +291,11 @@ const EventsManager = () => {
   };
 
   const handleSubmit = (data: EventFormData) => {
-    createMutation.mutate(data);
+    if (editingEvent) {
+      updateMutation.mutate({ ...data, id: editingEvent.id });
+    } else {
+      createMutation.mutate(data);
+    }
   };
 
   const handleCopyCode = async (code: string) => {
@@ -248,19 +305,43 @@ const EventsManager = () => {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  const handleOpenDialog = () => {
-    form.reset({
-      title: '',
-      theme: '',
-      preacher: '',
-      event_date: '',
-      redemption_deadline: '',
-      season_id: '',
-      rarity: 'comum',
-    });
+  const handleOpenDialog = (event?: Event) => {
+    if (event) {
+      setEditingEvent(event);
+      form.reset({
+        title: event.title,
+        theme: event.theme || '',
+        preacher: event.preacher || '',
+        event_date: event.event_date,
+        redemption_deadline: event.redemption_deadline.slice(0, 16),
+        season_id: event.season_id,
+        rarity: event.rarity,
+      });
+      setImagePreview(event.card_image_url);
+    } else {
+      setEditingEvent(null);
+      form.reset({
+        title: '',
+        theme: '',
+        preacher: '',
+        event_date: '',
+        redemption_deadline: '',
+        season_id: '',
+        rarity: 'comum',
+      });
+      setImagePreview(null);
+    }
     setImageFile(null);
-    setImagePreview(null);
     setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) {
+      setEditingEvent(null);
+      setImageFile(null);
+      setImagePreview(null);
+    }
+    setIsDialogOpen(open);
   };
 
   return (
@@ -270,16 +351,16 @@ const EventsManager = () => {
           <h2 className="text-2xl font-semibold">Eventos / Cards</h2>
           <p className="text-muted-foreground">Crie e gerencie eventos e seus cards</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
           <DialogTrigger asChild>
-            <Button onClick={handleOpenDialog} className="gap-2">
+            <Button onClick={() => handleOpenDialog()} className="gap-2">
               <Plus className="w-4 h-4" />
               Novo Evento
             </Button>
           </DialogTrigger>
           <DialogContent className="glass max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Novo Evento</DialogTitle>
+              <DialogTitle>{editingEvent ? 'Editar Evento' : 'Novo Evento'}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -438,12 +519,12 @@ const EventsManager = () => {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={createMutation.isPending || !imageFile}
+                  disabled={createMutation.isPending || updateMutation.isPending || (!editingEvent && !imageFile)}
                 >
-                  {createMutation.isPending && (
+                  {(createMutation.isPending || updateMutation.isPending) && (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   )}
-                  Criar Evento
+                  {editingEvent ? 'Salvar Alterações' : 'Criar Evento'}
                 </Button>
               </form>
             </Form>
@@ -511,14 +592,27 @@ const EventsManager = () => {
                   />
                 </div>
               </div>
-              <Button
-                variant="destructive"
-                className="w-full mt-2"
-                onClick={() => setEventToDelete(selectedEvent)}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Excluir Evento
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setSelectedEvent(null);
+                    handleOpenDialog(selectedEvent);
+                  }}
+                >
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Editar
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1"
+                  onClick={() => setEventToDelete(selectedEvent)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Excluir
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
