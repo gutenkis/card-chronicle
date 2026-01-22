@@ -116,6 +116,7 @@ const Auth = () => {
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-glow-pulse" />
 
       <motion.div
+        key="login-container"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -136,7 +137,7 @@ const Auth = () => {
               Renascer Cards
             </h1>
             <p className="text-muted-foreground mt-2">
-              Participe, resgate e torça para conseguir uma carta especial!
+              <span>Participe, resgate e torça para conseguir uma carta especial!</span>
             </p>
           </div>
 
@@ -150,7 +151,7 @@ const Auth = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="login">
+            <TabsContent value="login" key="login-content">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email-login">Email</Label>
@@ -166,7 +167,9 @@ const Auth = () => {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email}</p>
+                    <p className="text-sm text-destructive">
+                      <span>{errors.email}</span>
+                    </p>
                   )}
                 </div>
 
@@ -193,15 +196,15 @@ const Auth = () => {
                   disabled={loading}
                   className="w-full btn-primary-glow"
                 >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : null}
-                  Entrar
+                  <span className="flex items-center justify-center">
+                    {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                    <span>{loading ? 'Entrando...' : 'Entrar'}</span>
+                  </span>
                 </Button>
               </form>
             </TabsContent>
 
-            <TabsContent value="signup">
+            <TabsContent value="signup" key="signup-content">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email-signup">Email</Label>
