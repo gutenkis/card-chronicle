@@ -221,7 +221,7 @@ const CardDetailModal = ({ isOpen, onClose, card }: CardDetailModalProps) => {
                     {card.preacher && (
                       <p className="text-sm text-muted-foreground flex items-center gap-2 mb-2">
                         <User className="w-4 h-4" />
-                        Pregador: {card.preacher}
+                        {card.preacher}
                       </p>
                     )}
 
@@ -234,7 +234,7 @@ const CardDetailModal = ({ isOpen, onClose, card }: CardDetailModalProps) => {
               </div>
 
               {/* Share buttons */}
-              <div className="flex justify-center gap-3 mt-4">
+              {/* <div className="flex justify-center gap-3 mt-4">
                 <Button
                   onClick={handleShare}
                   className="flex-1 max-w-[200px]"
@@ -243,7 +243,7 @@ const CardDetailModal = ({ isOpen, onClose, card }: CardDetailModalProps) => {
                   <Share2 className="w-4 h-4 mr-2" />
                   Compartilhar
                 </Button>
-              </div>
+              </div> */}
             </div>
           </motion.div>
         </>

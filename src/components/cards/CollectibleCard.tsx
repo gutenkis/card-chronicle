@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
-import { HelpCircle, Clock, Lock, Gem, Crown, Sparkles } from 'lucide-react';
+import { HelpCircle, Clock, Lock, Gem, Crown, Sparkles, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type CardRarity = 'comum' | 'raro' | 'epico' | 'lendario';
@@ -244,9 +244,12 @@ const CollectibleCard = ({
                 <span className='font-bold'>Tema: {theme}</span>
               </h3>
               {preacher && (
-                <p className="text-xs text-muted-foreground line-clamp-1">
-                  Pregador: {preacher}
-                </p>
+                <div className='flex space-x-1 items-center'>
+                  <User size={12} />
+                  <p className="text-xs text-muted-foreground line-clamp-1">
+                    {preacher}
+                  </p>
+                </div>
               )}
               <p className="text-xs text-muted-foreground mt-1">
                 {eventDate.split('-').reverse().join('/')}

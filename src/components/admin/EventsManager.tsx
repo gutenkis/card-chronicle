@@ -397,9 +397,9 @@ const EventsManager = () => {
                     name="preacher"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Pregador</FormLabel>
+                        <FormLabel>Religioso(a) / Pregador(a) / Ministério</FormLabel>
                         <FormControl>
-                          <Input placeholder="Nome do pregador" {...field} />
+                          <Input placeholder="Nome" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -556,7 +556,7 @@ const EventsManager = () => {
                   <p><span className="font-semibold">Tema:</span> {selectedEvent.theme}</p>
                 )}
                 {selectedEvent.preacher && (
-                  <p><span className="font-semibold">Pregador:</span> {selectedEvent.preacher}</p>
+                  <p><span className="font-semibold"></span> {selectedEvent.preacher}</p>
                 )}
                 <p>
                   <span className="font-semibold">Data:</span>{' '}

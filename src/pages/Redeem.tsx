@@ -130,7 +130,8 @@ const RedeemPage = () => {
 
       // Check if redemption deadline has passed
       const now = new Date();
-      const deadline = new Date(event.redemption_deadline);
+      var deadline = new Date(event.redemption_deadline);
+      deadline.setHours(deadline.getHours() + 3)
       
       if (now > deadline) {
         setResult({
