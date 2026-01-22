@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Redeem from "./pages/Redeem";
 import Ranking from "./pages/Ranking";
+import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/redeem" element={<Redeem />} />
             <Route path="/ranking" element={<Ranking />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<Index />} />
           </Routes>
