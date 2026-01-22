@@ -20,7 +20,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const { user, signIn, signUp } = useAuth();
+  const { user, signIn, signUp, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -54,7 +54,6 @@ const Auth = () => {
 
     setLoading(true);
     const { error } = await signIn(email, password);
-    setLoading(false);
 
     if (error) {
       toast({
@@ -71,6 +70,7 @@ const Auth = () => {
       });
       navigate('/');
     }
+    setLoading(false);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -79,8 +79,6 @@ const Auth = () => {
 
     setLoading(true);
     const { error } = await signUp(email, password);
-    setLoading(false);
-
     if (error) {
       if (error.message.includes('already registered')) {
         toast({
@@ -98,10 +96,16 @@ const Auth = () => {
     } else {
       toast({
         title: 'Conta criada!',
-        description: 'Bem-vindo ao Cards RC!',
+        description: 'Agora confirme o seu e-mail no link enviado!',
       });
-      navigate('/');
+      handleSignOut();
     }
+    setLoading(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (

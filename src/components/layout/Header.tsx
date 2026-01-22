@@ -26,7 +26,7 @@ const Header = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/auth');
+    navigate('/');
   };
 
   const getInitials = (email: string) => {
