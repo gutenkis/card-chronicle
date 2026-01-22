@@ -46,48 +46,36 @@ const Ranking = () => {
   const { data: ranking, isLoading } = useQuery({
     queryKey: ['ranking', selectedSeason],
     queryFn: async () => {
+      // Use the secure ranking_view instead of directly querying user_cards
       let query = supabase
-        .from('user_cards')
-        .select('user_id, events!inner(season_id)');
+        .from('ranking_view')
+        .select('user_id, display_name, avatar_url, season_id, card_count');
 
       if (selectedSeason !== 'all') {
-        query = supabase
-          .from('user_cards')
-          .select('user_id, events!inner(season_id)')
-          .eq('events.season_id', selectedSeason);
+        query = query.eq('season_id', selectedSeason);
       }
 
-      const { data: cardsData, error: cardsError } = await query;
+      const { data, error } = await query;
 
-      if (cardsError) throw cardsError;
+      if (error) throw error;
 
-      // Count cards per user
-      const userCardCounts: Record<string, number> = {};
-      cardsData?.forEach((card: { user_id: string }) => {
-        userCardCounts[card.user_id] = (userCardCounts[card.user_id] || 0) + 1;
+      // Aggregate card counts per user (in case of multiple seasons)
+      const userTotals: Record<string, RankingUser> = {};
+      
+      data?.forEach((row) => {
+        if (!userTotals[row.user_id]) {
+          userTotals[row.user_id] = {
+            user_id: row.user_id,
+            display_name: row.display_name,
+            avatar_url: row.avatar_url,
+            card_count: 0,
+          };
+        }
+        userTotals[row.user_id].card_count += row.card_count;
       });
 
-      // Get profiles for users
-      const userIds = Object.keys(userCardCounts);
-      if (userIds.length === 0) return [];
-
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('user_id, display_name, avatar_url')
-        .in('user_id', userIds);
-
-      if (profilesError) throw profilesError;
-
-      // Combine data
-      const rankingData: RankingUser[] = profilesData.map((profile) => ({
-        user_id: profile.user_id,
-        display_name: profile.display_name,
-        avatar_url: profile.avatar_url,
-        card_count: userCardCounts[profile.user_id] || 0,
-      }));
-
-      // Sort by card count
-      return rankingData.sort((a, b) => b.card_count - a.card_count);
+      // Convert to array and sort by card count
+      return Object.values(userTotals).sort((a, b) => b.card_count - a.card_count);
     },
   });
 

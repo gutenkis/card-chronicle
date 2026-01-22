@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/layout/Header';
 import CollectibleCard, { CardRarity, CardVariant } from '@/components/cards/CollectibleCard';
+import CardDetailModal from '@/components/cards/CardDetailModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sparkles, Calendar, ArrowUpDown } from 'lucide-react';
 
@@ -28,7 +29,7 @@ interface Event {
 
 interface UserCard {
   event_id: string;
-  variant: 'comum' | 'holografica' | 'edicao_diamante' | 'reliquia';
+  variant: CardVariant;
 }
 
 type SortOption = 'date_desc' | 'date_asc' | 'rarity_desc' | 'rarity_asc';
@@ -48,6 +49,18 @@ const Index = () => {
   const [userCards, setUserCards] = useState<UserCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>('date_desc');
+  
+  // Modal state
+  const [selectedCard, setSelectedCard] = useState<{
+    id: string;
+    title: string;
+    imageUrl: string;
+    rarity: CardRarity;
+    variant: CardVariant;
+    eventDate: string;
+    preacher?: string;
+    theme?: string;
+  } | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -79,10 +92,10 @@ const Index = () => {
   const fetchUserCards = async () => {
     if (!user) return;
     const { data } = await supabase.from('user_cards').select('event_id, variant').eq('user_id', user.id);
-    if (data) setUserCards(data);
+    if (data) setUserCards(data as UserCard[]);
   };
 
-  const getCardVariant = (eventId: string) => {
+  const getCardVariant = (eventId: string): CardVariant => {
     const card = userCards.find(uc => uc.event_id === eventId);
     return card?.variant || 'comum';
   };
@@ -104,6 +117,21 @@ const Index = () => {
         return 0;
     }
   });
+
+  const handleCardClick = (event: Event) => {
+    if (!isCardRedeemed(event.id)) return;
+    
+    setSelectedCard({
+      id: event.id,
+      title: event.title,
+      imageUrl: event.card_image_url,
+      rarity: event.rarity,
+      variant: getCardVariant(event.id),
+      eventDate: event.event_date,
+      preacher: event.preacher || undefined,
+      theme: event.theme || undefined,
+    });
+  };
 
   if (!user) {
     return (
@@ -182,12 +210,20 @@ const Index = () => {
                   theme={event.theme || undefined}
                   isRedeemed={isCardRedeemed(event.id)}
                   redemptionDeadline={new Date(event.redemption_deadline)}
+                  onClick={() => handleCardClick(event)}
                 />
               </motion.div>
             ))}
           </div>
         )}
       </main>
+
+      {/* Card Detail Modal */}
+      <CardDetailModal
+        isOpen={!!selectedCard}
+        onClose={() => setSelectedCard(null)}
+        card={selectedCard}
+      />
     </div>
   );
 };
