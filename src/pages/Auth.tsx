@@ -7,19 +7,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Mail, Lock } from 'lucide-react';
+import { Loader2, Sparkles, Mail, Lock, User } from 'lucide-react';
 import { z } from 'zod';
 
-const authSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+});
+
+const signupSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  displayName: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres').max(50, 'O nome deve ter no máximo 50 caracteres'),
 });
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; displayName?: string }>({});
   const { user, signIn, signUp, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -30,9 +37,9 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  const validateForm = () => {
+  const validateLoginForm = () => {
     try {
-      authSchema.parse({ email, password });
+      loginSchema.parse({ email, password });
       setErrors({});
       return true;
     } catch (error) {
@@ -48,9 +55,28 @@ const Auth = () => {
     }
   };
 
+  const validateSignupForm = () => {
+    try {
+      signupSchema.parse({ email, password, displayName });
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: { email?: string; password?: string; displayName?: string } = {};
+        error.errors.forEach((err) => {
+          if (err.path[0] === 'email') fieldErrors.email = err.message;
+          if (err.path[0] === 'password') fieldErrors.password = err.message;
+          if (err.path[0] === 'displayName') fieldErrors.displayName = err.message;
+        });
+        setErrors(fieldErrors);
+      }
+      return false;
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateLoginForm()) return;
 
     setLoading(true);
     const { error } = await signIn(email, password);
@@ -75,10 +101,10 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateSignupForm()) return;
 
     setLoading(true);
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password, displayName);
     if (error) {
       if (error.message.includes('already registered')) {
         toast({
@@ -207,7 +233,25 @@ const Auth = () => {
             <TabsContent value="signup" key="signup-content">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email-signup">Email</Label>
+                  <Label htmlFor="displayName-signup">Nome *</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="displayName-signup"
+                      type="text"
+                      placeholder="Seu nome"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="pl-10 bg-background/50 border-border/50 focus:border-primary"
+                    />
+                  </div>
+                  {errors.displayName && (
+                    <p className="text-sm text-destructive">{errors.displayName}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email-signup">Email *</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -225,7 +269,7 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password-signup">Senha</Label>
+                  <Label htmlFor="password-signup">Senha *</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
