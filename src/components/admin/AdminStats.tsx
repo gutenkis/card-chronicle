@@ -11,7 +11,7 @@ const AdminStats = () => {
       const [seasonsRes, eventsRes, usersRes, cardsRes] = await Promise.all([
         supabase.from('seasons').select('id', { count: 'exact' }),
         supabase.from('events').select('id', { count: 'exact' }),
-        supabase.from('profiles').select('id', { count: 'exact' }),
+        supabase.from('profiles_public').select('id', { count: 'exact' }),
         supabase.from('user_cards').select('id', { count: 'exact' }),
       ]);
 
